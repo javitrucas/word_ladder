@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Header from "../components/Header";
@@ -6,6 +6,22 @@ import Header from "../components/Header";
 export default function Home() {
   const navigate = useNavigate();
   const [darkMode, setDarkMode] = useState(false);
+
+  // Mantener el fondo cuando el componente carga
+  useEffect(() => {
+    document.body.classList.add("light-mode");
+  }, []);
+
+  const toggleDarkMode = () => {
+    setDarkMode(!darkMode);
+    if (!darkMode) {
+      document.body.classList.add("dark-mode");
+      document.body.classList.remove("light-mode");
+    } else {
+      document.body.classList.add("light-mode");
+      document.body.classList.remove("dark-mode");
+    }
+  };
 
   const nuevaPartida = async () => {
     try {
@@ -21,22 +37,17 @@ export default function Home() {
 
   return (
     <>
-      {/* Toggle de modo oscuro fuera del container */}
+      {/* Toggle de modo oscuro */}
       <div className="dark-mode-toggle">
         <label className="switch">
-          <input
-            type="checkbox"
-            checked={darkMode}
-            onChange={() => setDarkMode(!darkMode)}
-          />
+          <input type="checkbox" checked={darkMode} onChange={toggleDarkMode} />
           <span className="slider"></span>
         </label>
       </div>
 
-      <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
+      <div className="container">
         <Header darkMode={darkMode} />
 
-        {/* Contenido principal */}
         <div className="titulo">
           <span>W</span>
           <div className="btn-container">
