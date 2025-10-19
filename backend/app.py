@@ -10,6 +10,7 @@ from utils import (
     generar_partida_rapida
 )
 import random
+from fastapi import Body
 
 app = FastAPI(title="Word Ladder API")
 
@@ -47,3 +48,21 @@ def puntuacion(cadena: list[str]):
         return {"valida": False, "mensaje": "La cadena no es correcta"}
     puntos = puntuacion_cadena(cadena)
     return {"valida": True, "puntuacion": puntos}
+
+@app.post("/puntuacion_detallada")
+def puntuacion_detallada(cadena: list[str] = Body(...)):
+    """
+    Recibe una lista de palabras y devuelve:
+    - detalles: lista de {palabra, puntuacion (int or None)}
+    - total: suma de las puntuaciones válidas
+    """
+    detalles = []
+    total = 0
+    for w in cadena:
+        existe, score = existe_palabra(w)
+        if existe and score is not None:
+            detalles.append({"palabra": w, "puntuacion": int(score)})
+            total += int(score)
+        else:
+            detalles.append({"palabra": w, "puntuacion": None})
+    return {"detalles": detalles, "total": total}
