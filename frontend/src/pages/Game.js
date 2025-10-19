@@ -10,8 +10,9 @@ export default function Game() {
   const [terminado, setTerminado] = useState(false);
   const [miDetalle, setMiDetalle] = useState(null);
   const [solDetalle, setSolDetalle] = useState(null);
+  const [coloresPalabra, setColoresPalabra] = useState([]);
 
-  // Cargar nueva partida en cada carga de la página
+  // Cargar nueva partida al montar
   useEffect(() => {
     const iniciarPartida = async () => {
       try {
@@ -26,14 +27,14 @@ export default function Game() {
         setTerminado(false);
         setMiDetalle(null);
         setSolDetalle(null);
+        setColoresPalabra([]);
       } catch (err) {
         console.error("Error iniciando partida:", err);
         setMensaje("Error al iniciar partida. Revisa el backend.");
       }
     };
-
     iniciarPartida();
-  }, []); // vacío => se ejecuta al montar (cada recarga de la página)
+  }, []);
 
   const handleInput = (e) => {
     setPalabra(e.target.value.toLowerCase());
@@ -48,17 +49,44 @@ export default function Game() {
     const palabraActual = cadena[cadena.length - 1];
 
     try {
-      const res = await fetch(
-        `http://127.0.0.1:8000/comprobar_palabra?palabra_actual=${encodeURIComponent(
-          palabraActual
-        )}&palabra_nueva=${encodeURIComponent(palabra)}`,
-        { method: "POST" }
-      );
+      const res = await fetch("http://127.0.0.1:8000/jugada", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          palabra_actual: palabraActual,
+          palabra_nueva: palabra,
+          palabras_usadas: cadena,
+          vidas: partida.vidas,
+        }),
+      });
+
       const data = await res.json();
 
       if (!data.valida) {
         setEstado("error");
         setMensaje(data.motivo || "Palabra inválida");
+
+        if (data.vidas !== undefined) {
+          setPartida((p) => ({ ...p, vidas: data.vidas }));
+        }
+
+        if (data.game_over) {
+          setTerminado(true);
+          setMensaje("😢 Has perdido todas tus vidas. Juego terminado.");
+          // Pedir puntuación de la cadena solucion
+          try {
+            const detalleSol = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify(partida.solucion),
+            });
+            const detalleSolJson = await detalleSol.json();
+            setSolDetalle(detalleSolJson);
+          } catch (err) {
+            console.error("Error obteniendo puntuaciones de solución:", err);
+          }
+        }
+
         return;
       }
 
@@ -69,10 +97,16 @@ export default function Game() {
       setEstado("ok");
       setMensaje("");
 
+      if (data.vidas !== undefined) {
+        setPartida((p) => ({ ...p, vidas: data.vidas }));
+      }
+
+      setColoresPalabra(data.colores || []);
+
       // si llegamos al final
       if (palabra === partida.fin) {
         setTerminado(true);
-        // pedir puntuaciones detalladas tanto para la cadena del jugador como para la solución
+
         try {
           const detalleMi = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
             method: "POST",
@@ -110,23 +144,44 @@ export default function Game() {
         <span style={{ color: "#dc2626" }}>{partida.fin}</span>
       </h2>
 
+      <p>Vidas restantes: {partida.vidas}</p>
+
       <div style={{ margin: "1rem 0" }}>
         <strong>Tu cadena:</strong>
         <div style={{ marginTop: "8px" }}>
-          {cadena.map((p, i) => (
-            <span
-              key={i}
-              style={{
-                background: "#e0e7ff",
-                padding: "6px 10px",
-                borderRadius: "8px",
-                margin: "0 6px",
-                display: "inline-block",
-              }}
-            >
-              {p}
-            </span>
-          ))}
+          {cadena.map((p, i) => {
+            const letraColor = i === cadena.length - 1 ? coloresPalabra : [];
+            return (
+              <span
+                key={i}
+                style={{
+                  background: "#e0e7ff",
+                  padding: "6px 10px",
+                  borderRadius: "8px",
+                  margin: "0 6px",
+                  display: "inline-block",
+                }}
+              >
+                {i === cadena.length - 1 && letraColor.length
+                  ? p.split("").map((l, idx) => (
+                      <span
+                        key={idx}
+                        style={{
+                          color:
+                            letraColor[idx] === "green"
+                              ? "#16a34a"
+                              : letraColor[idx] === "yellow"
+                              ? "#facc15"
+                              : "#000",
+                        }}
+                      >
+                        {l}
+                      </span>
+                    ))
+                  : p}
+              </span>
+            );
+          })}
         </div>
       </div>
 
@@ -161,11 +216,13 @@ export default function Game() {
             Comprobar
           </button>
 
-          {mensaje && <p style={{ color: estado === "error" ? "#dc2626" : "#16a34a" }}>{mensaje}</p>}
+          {mensaje && (
+            <p style={{ color: estado === "error" ? "#dc2626" : "#16a34a" }}>{mensaje}</p>
+          )}
         </>
       ) : (
         <>
-          <h3>🎉 ¡Has llegado a la meta!</h3>
+          <h3>{partida.vidas === 0 ? "Has perdido todas tus vidas" : "¡Has llegado a la meta!"}</h3>
 
           {miDetalle && (
             <div style={{ marginTop: "12px", textAlign: "left", display: "inline-block" }}>
@@ -177,12 +234,21 @@ export default function Game() {
                   </li>
                 ))}
               </ul>
-              <p><strong>Total:</strong> {miDetalle.total}</p>
+              <p>
+                <strong>Total:</strong> {miDetalle.total}
+              </p>
             </div>
           )}
 
           {solDetalle && (
-            <div style={{ marginTop: "12px", textAlign: "left", display: "inline-block", marginLeft: "30px" }}>
+            <div
+              style={{
+                marginTop: "12px",
+                textAlign: "left",
+                display: "inline-block",
+                marginLeft: "30px",
+              }}
+            >
               <h4>Cadena generada por el juego:</h4>
               <ul>
                 {solDetalle.detalles.map((d, idx) => (
@@ -191,7 +257,9 @@ export default function Game() {
                   </li>
                 ))}
               </ul>
-              <p><strong>Total:</strong> {solDetalle.total}</p>
+              <p>
+                <strong>Total:</strong> {solDetalle.total}
+              </p>
             </div>
           )}
         </>

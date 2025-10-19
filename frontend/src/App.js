@@ -7,13 +7,10 @@ import "./App.css";
 function App() {
   return (
     <Router>
-      <div className="app">
-        <h1 className="title">Escalera de Palabras</h1>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/juego" element={<Game />} />
         </Routes>
-      </div>
     </Router>
   );
 }

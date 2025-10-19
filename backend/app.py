@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Body
 from fastapi.middleware.cors import CORSMiddleware
 from utils import (
     obtener_cadenas,
@@ -7,14 +7,15 @@ from utils import (
     palabras_dict,
     existe_palabra,
     es_vecina,
-    generar_partida_rapida
+    generar_partida_rapida,
+    palabra_repetida,
+    colores_letras,
+    actualizar_vidas
 )
 import random
-from fastapi import Body
 
 app = FastAPI(title="Word Ladder API")
 
-# Habilitar CORS para permitir conexión con React
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -31,16 +32,50 @@ def root():
 def nueva_partida():
     partida = generar_partida_rapida(longitud_cadena=5)
     partida["puntuacion_solucion"] = puntuacion_cadena(partida["solucion"])
+    partida["vidas"] = 3  # Inicializamos vidas
+    partida["palabras_usadas"] = [partida["inicio"]]  # La primera palabra ya usada
     return partida
 
-@app.post("/comprobar_palabra")
-def comprobar_palabra(palabra_actual: str, palabra_nueva: str):
-    existe, _ = existe_palabra(palabra_nueva)
+@app.post("/jugada")
+def jugada(
+    palabra_actual: str = Body(...),
+    palabra_nueva: str = Body(...),
+    palabras_usadas: list[str] = Body(...),
+    vidas: int = Body(...)
+):
+    # Verificar si la palabra existe
+    existe, score = existe_palabra(palabra_nueva)
+    
+    # Inicializamos el resultado
+    resultado = {"valida": True, "motivo": "", "colores": [], "vidas": vidas, "game_over": False}
+
+    # Palabra repetida
+    if palabra_repetida(palabra_nueva, palabras_usadas):
+        resultado["valida"] = False
+        resultado["motivo"] = "La palabra ya ha sido usada"
+        return resultado
+
+    # Palabra no existe
     if not existe:
-        return {"valida": False, "motivo": "No existe en el diccionario"}
+        resultado["valida"] = False
+        resultado["motivo"] = "No existe en el diccionario"
+        vidas, game_over = actualizar_vidas(vidas, False)
+        resultado["vidas"] = vidas
+        resultado["game_over"] = game_over
+        return resultado
+
+    # No es vecina
     if not es_vecina(palabra_actual, palabra_nueva):
-        return {"valida": False, "motivo": "No es vecina de la anterior"}
-    return {"valida": True}
+        resultado["valida"] = False
+        resultado["motivo"] = "No es vecina de la anterior"
+        return resultado
+
+    # Palabra válida: calculamos colores y actualizamos vidas
+    resultado["colores"] = colores_letras(palabra_nueva, palabra_actual)
+    resultado["vidas"] = vidas  # No se resta vida si es correcta
+    palabras_usadas.append(palabra_nueva)  # Guardamos palabra usada
+
+    return resultado
 
 @app.post("/puntuacion")
 def puntuacion(cadena: list[str]):
