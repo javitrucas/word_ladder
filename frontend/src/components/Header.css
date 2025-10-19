@@ -1,0 +1,55 @@
+/* Header.css */
+.header {
+  width: 98vw; /* full width */
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--header-bg);
+  padding: 12px 20px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.header.light-mode {
+  --header-bg: #ffffff;
+  color: #222;
+}
+
+.header.dark-mode {
+  --header-bg: #000000;
+  color: #f3f3f3;
+}
+
+.header-left h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.header-right {
+  display: flex;
+  gap: 16px;
+}
+
+.header-right button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  color: inherit;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: 0.3s;
+}
+
+.header-right button.active {
+  color: #FF6600;
+  border-bottom: 3px solid #FF6600;
+}
+
+/* Home.css - margen para que el contenido no quede tapado */
+.container {
+  margin-top: 80px; /* suficiente espacio debajo del header */
+}

@@ -1,268 +1,201 @@
-// src/pages/Game.js
 import React, { useState, useEffect } from "react";
+import "./Game.css";
+import Header from "../components/Header";
 
 export default function Game() {
-  const [partida, setPartida] = useState(null);
+  const [inicio, setInicio] = useState("");
+  const [fin, setFin] = useState("");
+  const [vidas, setVidas] = useState(3);
   const [cadena, setCadena] = useState([]);
   const [palabra, setPalabra] = useState("");
-  const [estado, setEstado] = useState(null); // "ok", "error", null
   const [mensaje, setMensaje] = useState("");
+  const [colores, setColores] = useState([]);
   const [terminado, setTerminado] = useState(false);
-  const [miDetalle, setMiDetalle] = useState(null);
-  const [solDetalle, setSolDetalle] = useState(null);
-  const [coloresPalabra, setColoresPalabra] = useState([]);
+  const [detalles, setDetalles] = useState(null);
+  const [solucion, setSolucion] = useState([]);
+  const [darkMode, setDarkMode] = useState(
+    localStorage.getItem("modo") === "oscuro"
+  );
 
-  // Cargar nueva partida al montar
   useEffect(() => {
-    const iniciarPartida = async () => {
+    const nuevaPartida = async () => {
       try {
         const res = await fetch("http://127.0.0.1:8000/nueva_partida");
-        if (!res.ok) throw new Error("No se pudo obtener partida");
         const data = await res.json();
-        setPartida(data);
+        setInicio(data.inicio);
+        setFin(data.fin);
         setCadena([data.inicio]);
-        setPalabra("");
-        setEstado(null);
+        setSolucion(data.solucion);
+        setVidas(3);
         setMensaje("");
         setTerminado(false);
-        setMiDetalle(null);
-        setSolDetalle(null);
-        setColoresPalabra([]);
+        setDetalles(null);
+        setColores([[...Array(data.inicio.length).fill(null)]]);
       } catch (err) {
-        console.error("Error iniciando partida:", err);
-        setMensaje("Error al iniciar partida. Revisa el backend.");
+        console.error("Error al iniciar partida", err);
       }
     };
-    iniciarPartida();
+    nuevaPartida();
   }, []);
 
-  const handleInput = (e) => {
-    setPalabra(e.target.value.toLowerCase());
-    setEstado(null);
-    setMensaje("");
-  };
+  useEffect(() => {
+    document.body.classList.toggle("dark-mode", darkMode);
+    document.body.classList.toggle("light-mode", !darkMode);
+    localStorage.setItem("modo", darkMode ? "oscuro" : "claro");
+  }, [darkMode]);
 
-  const enviarPalabra = async () => {
-    if (!palabra) return;
-    if (!partida) return;
-
+  const handleEnter = async () => {
+    if (!palabra || terminado) return;
     const palabraActual = cadena[cadena.length - 1];
 
-    try {
-      const res = await fetch("http://127.0.0.1:8000/jugada", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          palabra_actual: palabraActual,
-          palabra_nueva: palabra,
-          palabras_usadas: cadena,
-          vidas: partida.vidas,
-        }),
-      });
+    const res = await fetch("http://127.0.0.1:8000/jugada", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        palabra_actual: palabraActual,
+        palabra_nueva: palabra,
+        palabras_usadas: cadena,
+        vidas: vidas,
+      }),
+    });
 
-      const data = await res.json();
+    const data = await res.json();
 
-      if (!data.valida) {
-        setEstado("error");
-        setMensaje(data.motivo || "Palabra inválida");
-
-        if (data.vidas !== undefined) {
-          setPartida((p) => ({ ...p, vidas: data.vidas }));
-        }
-
-        if (data.game_over) {
-          setTerminado(true);
-          setMensaje("😢 Has perdido todas tus vidas. Juego terminado.");
-          // Pedir puntuación de la cadena solucion
-          try {
-            const detalleSol = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(partida.solucion),
-            });
-            const detalleSolJson = await detalleSol.json();
-            setSolDetalle(detalleSolJson);
-          } catch (err) {
-            console.error("Error obteniendo puntuaciones de solución:", err);
-          }
-        }
-
-        return;
-      }
-
-      // palabra válida: añadimos a la cadena
-      const nuevaCadena = [...cadena, palabra];
-      setCadena(nuevaCadena);
-      setPalabra("");
-      setEstado("ok");
-      setMensaje("");
-
-      if (data.vidas !== undefined) {
-        setPartida((p) => ({ ...p, vidas: data.vidas }));
-      }
-
-      setColoresPalabra(data.colores || []);
-
-      // si llegamos al final
-      if (palabra === partida.fin) {
+    if (!data.valida) {
+      setMensaje(data.motivo);
+      setVidas(data.vidas);
+      if (data.game_over || data.vidas === 0) {
         setTerminado(true);
-
-        try {
-          const detalleMi = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(nuevaCadena),
-          });
-          const detalleMiJson = await detalleMi.json();
-          setMiDetalle(detalleMiJson);
-
-          const detalleSol = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(partida.solucion),
-          });
-          const detalleSolJson = await detalleSol.json();
-          setSolDetalle(detalleSolJson);
-        } catch (err) {
-          console.error("Error obteniendo puntuaciones detalladas:", err);
-          setMensaje("Error al calcular puntuaciones.");
-        }
+        finalizarJuego([...cadena]);
       }
-    } catch (err) {
-      console.error(err);
-      setMensaje("Error de conexión con el servidor.");
-      setEstado("error");
+      return;
+    }
+
+    const nuevaCadena = [...cadena, palabra];
+    const nuevosColores = [...colores, data.colores];
+    setCadena(nuevaCadena);
+    setColores(nuevosColores);
+    setPalabra("");
+    setMensaje("");
+
+    if (palabra === fin) {
+      setTerminado(true);
+      finalizarJuego(nuevaCadena);
     }
   };
 
-  if (!partida) return <p style={{ textAlign: "center" }}>Cargando partida...</p>;
+  const finalizarJuego = async (cadenaFinal) => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(cadenaFinal),
+      });
+      const data = await res.json();
+      setDetalles(data);
+    } catch (err) {
+      console.error("Error puntuación:", err);
+    }
+  };
 
   return (
-    <div style={{ textAlign: "center", marginTop: "40px", padding: "1rem" }}>
-      <h2>
-        De <span style={{ color: "#16a34a" }}>{partida.inicio}</span> a{" "}
-        <span style={{ color: "#dc2626" }}>{partida.fin}</span>
-      </h2>
+    <div className={`game-container container ${darkMode ? "dark-mode" : "light-mode"}`}>
+      <Header darkMode={darkMode} />
+      
+      {/* Botón modo oscuro */}
+      <div className="dark-mode-toggle">
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={darkMode}
+            onChange={() => setDarkMode(!darkMode)}
+          />
+          <span className="slider"></span>
+        </label>
+      </div>
 
-      <p>Vidas restantes: {partida.vidas}</p>
+      {/* CABECERA */}
+      <div className="cabecera">
+        <h2 className="objetivo">
+          Palabra objetivo:{" "}
+          <span className="objetivo-texto">{fin}</span>
+        </h2>
 
-      <div style={{ margin: "1rem 0" }}>
-        <strong>Tu cadena:</strong>
-        <div style={{ marginTop: "8px" }}>
-          {cadena.map((p, i) => {
-            const letraColor = i === cadena.length - 1 ? coloresPalabra : [];
-            return (
-              <span
-                key={i}
-                style={{
-                  background: "#e0e7ff",
-                  padding: "6px 10px",
-                  borderRadius: "8px",
-                  margin: "0 6px",
-                  display: "inline-block",
-                }}
-              >
-                {i === cadena.length - 1 && letraColor.length
-                  ? p.split("").map((l, idx) => (
-                      <span
-                        key={idx}
-                        style={{
-                          color:
-                            letraColor[idx] === "green"
-                              ? "#16a34a"
-                              : letraColor[idx] === "yellow"
-                              ? "#facc15"
-                              : "#000",
-                        }}
-                      >
-                        {l}
-                      </span>
-                    ))
-                  : p}
-              </span>
-            );
-          })}
+        <div className="vidas">
+          {[...Array(3)].map((_, i) => (
+            <span key={i} className={`vida ${i < vidas ? "viva" : "muerta"}`}>
+              ❤️
+            </span>
+          ))}
         </div>
       </div>
 
-      {!terminado ? (
-        <>
+      {/* CADENA */}
+      <div className="cadena">
+        {cadena.map((pal, i) => (
+          <div key={i} className="palabra">
+            {pal.split("").map((letra, j) => (
+              <span
+                key={j}
+                className={`letra ${
+                  colores[i]?.[j] === "green"
+                    ? "verde"
+                    : colores[i]?.[j] === "yellow"
+                    ? "amarillo"
+                    : colores[i]?.[j] === "red"
+                    ? "rojo"
+                    : ""
+                }`}
+              >
+                {letra}
+              </span>
+            ))}
+          </div>
+        ))}
+      </div>
+
+      {/* INPUT */}
+      {!terminado && (
+        <div className="input-zone">
           <input
+            className="input-palabra"
             type="text"
+            placeholder="Escribe una palabra..."
             value={palabra}
-            onChange={handleInput}
-            placeholder="Escribe una palabra vecina..."
-            style={{
-              padding: "8px",
-              fontSize: "16px",
-              borderRadius: "8px",
-              border: estado === "error" ? "2px solid red" : "2px solid #ccc",
-              outline: "none",
-              width: "220px",
-            }}
+            onChange={(e) => setPalabra(e.target.value.toLowerCase())}
+            onKeyDown={(e) => e.key === "Enter" && handleEnter()}
           />
-          <button
-            onClick={enviarPalabra}
-            style={{
-              marginLeft: "10px",
-              padding: "8px 12px",
-              borderRadius: "8px",
-              background: "#2a6df4",
-              color: "#fff",
-              border: "none",
-              cursor: "pointer",
-            }}
-          >
-            Comprobar
-          </button>
+          <button className="boton" onClick={handleEnter}>⏎</button>
+        </div>
+      )}
 
-          {mensaje && (
-            <p style={{ color: estado === "error" ? "#dc2626" : "#16a34a" }}>{mensaje}</p>
-          )}
-        </>
-      ) : (
-        <>
-          <h3>{partida.vidas === 0 ? "Has perdido todas tus vidas" : "¡Has llegado a la meta!"}</h3>
+      {mensaje && <p className="mensaje">{mensaje}</p>}
 
-          {miDetalle && (
-            <div style={{ marginTop: "12px", textAlign: "left", display: "inline-block" }}>
+      {/* FINAL */}
+      {terminado && (
+        <div className="final">
+          <h3>Juego terminado</h3>
+          <p>Inicio: <strong>{inicio}</strong></p>
+          <p>Final: <strong>{fin}</strong></p>
+
+          {detalles && (
+            <div className="puntuacion">
               <h4>Tu cadena:</h4>
               <ul>
-                {miDetalle.detalles.map((d, idx) => (
-                  <li key={idx}>
-                    <strong>{d.palabra}</strong> — {d.puntuacion !== null ? d.puntuacion : "N/A"}
+                {detalles.detalles.map((d, i) => (
+                  <li key={i}>
+                    {d.palabra} → {d.puntuacion ?? "❌"}
                   </li>
                 ))}
               </ul>
-              <p>
-                <strong>Total:</strong> {miDetalle.total}
-              </p>
+              <p><strong>Total:</strong> {detalles.total}</p>
             </div>
           )}
 
-          {solDetalle && (
-            <div
-              style={{
-                marginTop: "12px",
-                textAlign: "left",
-                display: "inline-block",
-                marginLeft: "30px",
-              }}
-            >
-              <h4>Cadena generada por el juego:</h4>
-              <ul>
-                {solDetalle.detalles.map((d, idx) => (
-                  <li key={idx}>
-                    <strong>{d.palabra}</strong> — {d.puntuacion !== null ? d.puntuacion : "N/A"}
-                  </li>
-                ))}
-              </ul>
-              <p>
-                <strong>Total:</strong> {solDetalle.total}
-              </p>
-            </div>
-          )}
-        </>
+          <button onClick={() => window.location.reload()} className="boton-reiniciar">
+            Nueva partida
+          </button>
+        </div>
       )}
     </div>
   );

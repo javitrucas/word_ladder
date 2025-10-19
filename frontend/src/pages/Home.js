@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import Header from "../components/Header";
 
 export default function Home() {
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(false); // <-- estado para modo oscuro
+  const [darkMode, setDarkMode] = useState(false);
 
   const nuevaPartida = async () => {
     try {
@@ -19,8 +20,8 @@ export default function Home() {
   };
 
   return (
-    <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
-      {/* Botón de modo oscuro */}
+    <>
+      {/* Toggle de modo oscuro fuera del container */}
       <div className="dark-mode-toggle">
         <label className="switch">
           <input
@@ -32,43 +33,47 @@ export default function Home() {
         </label>
       </div>
 
-      {/* Tu contenido actual */}
-      <div className="titulo">
-        <span>W</span>
-        <div className="btn-container">
-          <div style={{ "--a": 0 }} className="btn-sensor sensor-n"></div>
-          <div style={{ "--a": 45 }} className="btn-sensor sensor-ne"></div>
-          <div style={{ "--a": 90 }} className="btn-sensor sensor-e"></div>
-          <div style={{ "--a": 135 }} className="btn-sensor sensor-se"></div>
-          <div style={{ "--a": 180 }} className="btn-sensor sensor-s"></div>
-          <div style={{ "--a": 225 }} className="btn-sensor sensor-sw"></div>
-          <div style={{ "--a": 270 }} className="btn-sensor sensor-w"></div>
-          <div style={{ "--a": 315 }} className="btn-sensor sensor-nw"></div>
-          <button className="btn-button" onClick={nuevaPartida}>
-            <div className="btn-lid"></div>
-            <div className="btn-pupil"></div>
-          </button>
+      <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
+        <Header darkMode={darkMode} />
+
+        {/* Contenido principal */}
+        <div className="titulo">
+          <span>W</span>
+          <div className="btn-container">
+            <div style={{ "--a": 0 }} className="btn-sensor sensor-n"></div>
+            <div style={{ "--a": 45 }} className="btn-sensor sensor-ne"></div>
+            <div style={{ "--a": 90 }} className="btn-sensor sensor-e"></div>
+            <div style={{ "--a": 135 }} className="btn-sensor sensor-se"></div>
+            <div style={{ "--a": 180 }} className="btn-sensor sensor-s"></div>
+            <div style={{ "--a": 225 }} className="btn-sensor sensor-sw"></div>
+            <div style={{ "--a": 270 }} className="btn-sensor sensor-w"></div>
+            <div style={{ "--a": 315 }} className="btn-sensor sensor-nw"></div>
+            <button className="btn-button" onClick={nuevaPartida}>
+              <div className="btn-lid"></div>
+              <div className="btn-pupil"></div>
+            </button>
+          </div>
+          <span>RD</span>
         </div>
-        <span>RD</span>
-      </div>
 
-      <div className="subtitle">LADDER</div>
+        <div className="subtitle">LADDER</div>
 
-      <div className="explicacion">
-        <p>
-          En <strong>Word Ladder</strong> tu objetivo es pasar de una palabra inicial a otra final.
-          Cada intento solo puede cambiar <strong>una letra por palabra</strong>.
-        </p>
-        <p>
-          Las letras correctas en la posición correcta aparecen en <span className="verde">verde</span>, 
-          las letras que has cambiado aparecen en <span className="amarillo">amarillo</span>.
-        </p>
-        <p>
-          Solo tienes <strong>tres vidas</strong>, así que piensa bien cada movimiento. 
-          <br />
-          <strong>Haz clic en el ojo para comenzar</strong>.
-        </p>
+        <div className="explicacion">
+          <p>
+            En <strong>Word Ladder</strong> tu objetivo es pasar de una palabra inicial a otra final.
+            Cada intento solo puede cambiar <strong>una letra por palabra</strong>.
+          </p>
+          <p>
+            Las letras correctas en la posición correcta aparecen en <span className="verde">verde</span>, 
+            las letras que has cambiado aparecen en <span className="amarillo">amarillo</span>.
+          </p>
+          <p>
+            Solo tienes <strong>tres vidas</strong>, así que piensa bien cada movimiento. 
+            <br />
+            <strong>Haz clic en el ojo para comenzar</strong>.
+          </p>
+        </div>
       </div>
-    </div>
+    </>
   );
 }

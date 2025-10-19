@@ -9,29 +9,6 @@
   font-family: "Arial", sans-serif;
 }
 
-/* Light mode - patrón Kennyotsu */
-.container.light-mode {
-  --color: #E1E1E1;
-  background-color: #F3F3F3;
-  background-image: 
-    linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
-  background-size: 55px 55px;
-  color: black;
-}
-
-/* Dark mode - patrón Adamgiebl */
-.container.dark-mode {
-  --color: rgba(114, 114, 114, 0.3);
-  background-color: #191a1a;
-  background-image: 
-    linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
-    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
-  background-size: 55px 55px;
-  color: #f3f3f3;
-}
-
-
 /* Título W[ojo]RD */
 .titulo {
   display: flex;
@@ -296,14 +273,6 @@
       #000 65% 100%
     );
   }
-}
-
-/* Botón modo oscuro arriba a la derecha */
-.dark-mode-toggle {
-  position: fixed;
-  top: 20px;       /* distancia desde arriba */
-  right: 20px;     /* distancia desde la derecha */
-  z-index: 200;    /* para que esté por encima de todo */
 }
 
 /* Estilos del switch */

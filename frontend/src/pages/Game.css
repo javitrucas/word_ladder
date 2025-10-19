@@ -1,0 +1,362 @@
+body {
+  background-color: #222;
+  color: white;
+  font-family: 'Poppins', sans-serif;
+  text-align: center;
+}
+
+.game-container {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ---- CABECERA ---- */
+.cabecera {
+  width: 100%;
+  max-width: 600px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.objetivo {
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.objetivo-texto {
+  font-weight: bold;
+  color: #4fd1c5;
+  text-transform: uppercase;
+}
+
+.vidas {
+  font-size: 28px;
+  display: flex;
+  gap: 6px;
+}
+
+.vida {
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.vida.viva {
+  animation: palpitar 3s infinite ease-in-out;
+}
+
+.vida.muerta {
+  opacity: 0.3;
+  transform: scale(0.9);
+}
+
+/* Animación del latido */
+@keyframes palpitar {
+  0%, 100% {
+    transform: scale(1);
+    filter: brightness(1);
+  }
+  25% {
+    transform: scale(1.2);
+    filter: brightness(1.3);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  75% {
+    transform: scale(1.15);
+    filter: brightness(1.2);
+  }
+}
+
+/* ---- PALABRAS ---- */
+.cadena {
+  margin-bottom: 20px;
+}
+
+.palabra {
+  display: flex;
+  justify-content: center;
+  margin: 4px 0;
+}
+
+.letra {
+  width: 40px;
+  height: 40px;
+  background: #444;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2px;
+  border-radius: 6px;
+  font-size: 22px;
+  text-transform: uppercase;
+}
+
+.letra.verde {
+  background: green;
+}
+
+.letra.amarillo {
+  background: goldenrod;
+}
+
+.letra.rojo {
+  background: crimson;
+}
+
+/* ---- INPUT ---- */
+.input-zone {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.input-palabra {
+  width: 180px;
+  padding: 10px;
+  font-size: 18px;
+  border-radius: 8px;
+  border: none;
+  outline: none;
+}
+
+.boton {
+  background: lightgray;
+  border: none;
+  padding: 10px 18px;
+  font-size: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.boton:hover {
+  background: #ddd;
+}
+
+.mensaje {
+  margin-top: 10px;
+  color: orange;
+}
+
+/* ---- FINAL ---- */
+.final {
+  margin-top: 30px;
+}
+
+.puntuacion ul {
+  list-style: none;
+  padding: 0;
+}
+
+.boton-reiniciar {
+  background: dodgerblue;
+  border: none;
+  color: white;
+  font-size: 18px;
+  padding: 10px 16px;
+  margin-top: 20px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.boton-reiniciar:hover {
+  background: deepskyblue;
+}
+
+/* ---- TOGGLE CLARO/OSCURO ---- */
+.dark-mode-toggle {
+  position: 30px;
+  top: 20px;
+  right: 20px;
+  z-index: 200;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  --background: #28096b;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background);
+  transition: .5s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.4em;
+  width: 1.4em;
+  border-radius: 50%;
+  left: 10%;
+  bottom: 15%;
+  box-shadow: inset 8px -4px 0px 0px #fff000;
+  background: var(--background);
+  transition: .5s;
+}
+
+input:checked + .slider {
+  background-color: #522ba7;
+}
+
+input:checked + .slider:before {
+  transform: translateX(100%);
+  box-shadow: inset 15px -4px 0px 15px #fff000;
+}
+
+/* Modo claro/oscuro */
+body.light-mode {
+  background-color: #f3f3f3;
+  color: #000;
+}
+
+body.dark-mode {
+  background-color: #222;
+  color: white;
+}
+
+
+/* ---- BOTÓN MODO OSCURO ---- */
+/* Toggle modo oscuro - limpio y funcional */
+.dark-mode-toggle {
+  position: fixed;   /* lo fija en la pantalla */
+  top: 65px;         /* distancia desde arriba - cambia a tu gusto */
+  right: 20px;       /* distancia desde la derecha */
+  z-index: 9999;     /* para que esté por encima de todo */
+}
+
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  --background: #28096b;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background);
+  transition: 0.5s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.4em;
+  width: 1.4em;
+  border-radius: 50%;
+  left: 10%;
+  bottom: 15%;
+  box-shadow: inset 8px -4px 0px 0px #fff000;
+  background: var(--background);
+  transition: 0.5s;
+}
+
+input:checked + .slider {
+  background-color: #522ba7;
+}
+
+input:checked + .slider:before {
+  transform: translateX(100%);
+  box-shadow: inset 15px -4px 0px 15px #fff000;
+}
+
+/* ---------- PATRONES DE FONDO ---------- */
+
+/* Fondo modo claro */
+.light-mode.container {
+  --color: #E1E1E1;
+  background-color: #F3F3F3;
+  background-image: linear-gradient(
+      0deg,
+      transparent 24%,
+      var(--color) 25%,
+      var(--color) 26%,
+      transparent 27%,
+      transparent 74%,
+      var(--color) 75%,
+      var(--color) 76%,
+      transparent 77%,
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      transparent 24%,
+      var(--color) 25%,
+      var(--color) 26%,
+      transparent 27%,
+      transparent 74%,
+      var(--color) 75%,
+      var(--color) 76%,
+      transparent 77%,
+      transparent
+    );
+  background-size: 55px 55px;
+  transition: background-color 0.4s, background-image 0.4s;
+}
+
+/* Fondo modo oscuro */
+.dark-mode.container {
+  --color: rgba(114, 114, 114, 0.3);
+  background-color: #191a1a;
+  background-image: linear-gradient(
+      0deg,
+      transparent 24%,
+      var(--color) 25%,
+      var(--color) 26%,
+      transparent 27%,
+      transparent 74%,
+      var(--color) 75%,
+      var(--color) 76%,
+      transparent 77%,
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      transparent 24%,
+      var(--color) 25%,
+      var(--color) 26%,
+      transparent 27%,
+      transparent 74%,
+      var(--color) 75%,
+      var(--color) 76%,
+      transparent 77%,
+      transparent
+    );
+  background-size: 55px 55px;
+  transition: background-color 0.4s, background-image 0.4s;
+}
