@@ -1,4 +1,5 @@
 import unicodedata
+import time
 
 # Crear diccionario de palabras y sus puntuaciones desde el archivo generado
 palabras_dict = {}
@@ -61,3 +62,93 @@ def es_vecina(palabra1, palabra2):
     return diferencias == 1 or diferencias == 0
 
 # print(es_vecina("casa","caja"))
+
+# Función para comprobar si una cadena de palabras es correcta
+def comprobar_cadena(cadena):
+    correcta=True
+
+    for i in range(len(cadena)-1):
+        if not es_vecina(cadena[i],cadena[i+1]):
+            correcta=False
+    
+    return correcta
+
+# cadena=["casa","caja","cala","cola","cola"]
+# print(comprobar_cadena(cadena))
+
+# Función para obtener la puntuación total de una cadena de palabras
+def puntuacion_cadena(cadena):
+    puntuacion_total=0
+
+    for palabra in cadena:
+        existe, score = existe_palabra(palabra)
+        if existe:
+            puntuacion_total += score
+
+    return puntuacion_total
+
+# cadena=["casa","caja","cala","cola","cola"]
+# print(puntuacion_cadena(cadena))
+
+# Funcion para obtener la cadena más corta entre dos palabras dadas
+import time
+
+def obtener_cadenas(palabra_inicio, palabra_fin, max_caminos=None, tiempo_max=None):
+
+    if palabra_inicio not in palabras_dict or palabra_fin not in palabras_dict:
+        return None
+
+    palabra_inicio = palabra_inicio.lower()
+    palabra_fin = palabra_fin.lower()
+    largo = len(palabra_inicio)
+
+    palabras_mismo_largo = {p for p in palabras_dict if len(p) == largo}
+
+    cola = [[palabra_inicio]]  # BFS: lista de caminos
+    cadenas_encontradas = []
+    encontrado = False
+
+    t_inicio = time.time() if tiempo_max is not None else None
+
+    while cola:
+        # Comprobar tiempo si aplica
+        if tiempo_max is not None and (time.time() - t_inicio > tiempo_max):
+            print(f"Tiempo máximo ({tiempo_max}s) alcanzado.")
+            break
+
+        siguiente_nivel = []
+
+        for camino in cola:
+            ultima = camino[-1]
+
+            for vecino in palabras_mismo_largo:
+                if vecino in camino:
+                    continue
+                if es_vecina(ultima, vecino):
+                    nuevo_camino = camino + [vecino]
+
+                    if vecino == palabra_fin:
+                        cadenas_encontradas.append(nuevo_camino)
+                        encontrado = True
+                        # Si solo queremos la primera cadena, devolvemos directamente
+                        if max_caminos == 1:
+                            return [nuevo_camino]
+                    else:
+                        siguiente_nivel.append(nuevo_camino)
+
+        if encontrado and max_caminos is None:
+            # Si encontramos al menos una cadena, solo seguimos con este nivel
+            # para capturar todas las cadenas de longitud mínima
+            cola = siguiente_nivel
+            encontrado = False  # no salir todavía
+            continue
+
+        cola = siguiente_nivel
+
+        if max_caminos is not None and len(cadenas_encontradas) >= max_caminos:
+            break
+
+    return cadenas_encontradas if cadenas_encontradas else None
+
+# print(obtener_cadenas("pato","lago",max_caminos=2))
+# print(puntuacion_cadena(obtener_cadenas("pato","lago",max_caminos=2)[0]))
