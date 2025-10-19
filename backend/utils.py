@@ -1,5 +1,6 @@
 import unicodedata
 import time
+import random
 
 # Crear diccionario de palabras y sus puntuaciones desde el archivo generado
 palabras_dict = {}
@@ -152,3 +153,29 @@ def obtener_cadenas(palabra_inicio, palabra_fin, max_caminos=None, tiempo_max=No
 
 # print(obtener_cadenas("pato","lago",max_caminos=2))
 # print(puntuacion_cadena(obtener_cadenas("pato","lago",max_caminos=2)[0]))
+
+# Función para generar una partida rápida con una cadena de longitud dada
+def generar_partida_rapida(longitud_cadena=5):
+    palabras_posibles = [p for p in palabras_dict if 2 <= len(p) <= 5]
+
+    palabra_actual = random.choice(palabras_posibles)
+    cadena = [palabra_actual]
+
+    for _ in range(longitud_cadena - 1):
+        # Buscar vecinos válidos de la palabra actual
+        vecinos = [p for p in palabras_posibles if es_vecina(palabra_actual, p) and p not in cadena]
+        if not vecinos:
+            break  # no hay vecinos, termina la cadena
+        palabra_actual = random.choice(vecinos)
+        cadena.append(palabra_actual)
+
+    palabra_inicio = cadena[0]
+    palabra_fin = cadena[-1]
+
+    return {
+        "inicio": palabra_inicio,
+        "fin": palabra_fin,
+        "solucion": cadena
+    }
+
+print(generar_partida_rapida(5))
