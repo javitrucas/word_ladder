@@ -1,21 +1,21 @@
 import random
-from utils import obtener_cadenas, comprobar_cadena, puntuacion_cadena, palabras_dict, existe_palabra, es_vecina
+from utils import (
+    generar_partida_rapida,
+    obtener_cadenas,
+    comprobar_cadena,
+    puntuacion_cadena,
+    palabras_dict,
+    existe_palabra,
+    es_vecina,
+    graficar_todas_cadenas
+)
 
 def jugar():
-    # Filtrar palabras
-    palabras_posibles = [p for p in palabras_dict if 2 <= len(p) <= 5]
-
-    # Elegir palabras aleatorias con solución
-    while True:
-        palabra_inicio = random.choice(palabras_posibles)
-        palabra_fin = random.choice(palabras_posibles)
-        if palabra_inicio == palabra_fin:
-            continue
-        # Buscar solución mínima y guardarla
-        solucion = obtener_cadenas(palabra_inicio, palabra_fin, max_caminos=1)
-        if solucion:
-            solucion = solucion[0]  # Tomamos la primera cadena mínima
-            break
+    # Generar una partida rápida
+    partida = generar_partida_rapida(longitud_cadena=5)
+    palabra_inicio = partida['inicio']
+    palabra_fin = partida['fin']
+    solucion = partida['solucion']
 
     print("¡Nuevo juego!")
     print(f"Palabra inicial: {palabra_inicio}")
@@ -55,6 +55,18 @@ def jugar():
         print(f"Tu puntuación total: {puntuacion_cadena(cadena_jugador)}")
 
     print("Cadena final del jugador:", cadena_jugador)
+
+    # 🎨 Graficar todas las cadenas
+    try:
+        graficar_todas_cadenas(
+            cadena_usuario=cadena_jugador,
+            partida=partida,
+            max_cadenas_extra=3,
+            tiempo_max=5
+        )
+        print("Grafo generado en 'grafo_partida.html'. Ábrelo en tu navegador para verlo.")
+    except Exception as e:
+        print("Error al generar el grafo:", e)
 
 
 jugar()

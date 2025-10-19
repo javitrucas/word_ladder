@@ -10,7 +10,8 @@ from utils import (
     generar_partida_rapida,
     palabra_repetida,
     colores_letras,
-    actualizar_vidas
+    actualizar_vidas,
+    graficar_todas_cadenas
 )
 import random
 
@@ -101,3 +102,21 @@ def puntuacion_detallada(cadena: list[str] = Body(...)):
         else:
             detalles.append({"palabra": w, "puntuacion": None})
     return {"detalles": detalles, "total": total}
+
+@app.post("/grafo")
+def generar_grafo(
+    cadena_usuario: list[str] = Body(...),
+    partida: dict = Body(...),
+    max_cadenas_extra: int = 3,
+    tiempo_max: int = 5
+):
+    try:
+        graficar_todas_cadenas(
+            cadena_usuario=cadena_usuario,
+            partida=partida,
+            max_cadenas_extra=max_cadenas_extra,
+            tiempo_max=tiempo_max
+        )
+        return {"html": "grafo_partida.html", "mensaje": "Grafo generado. Ábrelo en tu navegador."}
+    except Exception as e:
+        return {"error": str(e)}

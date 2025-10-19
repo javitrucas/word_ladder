@@ -178,7 +178,7 @@ def generar_partida_rapida(longitud_cadena=5):
         "solucion": cadena
     }
 
-print(generar_partida_rapida(5))
+# print(generar_partida_rapida(5))
 
 # Funciones adicionales para la gestión de partidas
 def palabra_repetida(palabra, palabras_usadas):
@@ -212,3 +212,67 @@ def actualizar_vidas(vidas, palabra_existe):
     if not palabra_existe:
         vidas -= 1
     return vidas, vidas <= 0
+
+from pyvis.network import Network
+import networkx as nx
+from utils import obtener_cadenas
+
+def graficar_todas_cadenas(cadena_usuario, partida, max_cadenas_extra=3, tiempo_max=5):
+    G = nx.Graph()
+    inicio = partida['inicio']
+    fin = partida['fin']
+
+    # 1️⃣ Cadena generada (verde)
+    if partida.get('solucion'):
+        for i in range(len(partida['solucion']) - 1):
+            G.add_edge(partida['solucion'][i], partida['solucion'][i+1], color='green', width=3)
+
+    # 2️⃣ Cadena del usuario (azul)
+    if cadena_usuario[0] != inicio:
+        print("La cadena del usuario no empieza en la palabra inicial.")
+        return
+    if cadena_usuario[-1] == fin:
+        print("¡Usuario completó la cadena!")
+    for i in range(len(cadena_usuario) - 1):
+        G.add_edge(cadena_usuario[i], cadena_usuario[i+1], color='blue', width=5)
+
+    # 3️⃣ Cadena más corta (roja)
+    cadenas_cortas = obtener_cadenas(inicio, fin, max_caminos=1, tiempo_max=tiempo_max)
+    cadena_corta = []
+    if cadenas_cortas:
+        cadena_corta = cadenas_cortas[0]
+        for i in range(len(cadena_corta) - 1):
+            G.add_edge(cadena_corta[i], cadena_corta[i+1], color='red', width=4)
+
+    # 4️⃣ Cadenas extra (gris)
+    cadenas_extra = obtener_cadenas(inicio, fin, max_caminos=max_cadenas_extra, tiempo_max=tiempo_max)
+    if cadenas_extra:
+        for cadena in cadenas_extra:
+            if cadena not in [partida.get('solucion'), cadena_usuario, cadena_corta]:
+                for i in range(len(cadena) - 1):
+                    G.add_edge(cadena[i], cadena[i+1], color='lightgray', width=2)
+
+    # 5️⃣ Crear grafo interactivo
+    net = Network(height="700px", width="100%", notebook=True, bgcolor="#222222", font_color="white")
+    net.from_nx(G)
+
+    # Colores de nodos según prioridad: usuario > generada > corta > extras
+    for nodo in G.nodes():
+        if nodo in cadena_usuario:
+            net.get_node(nodo)['color'] = 'blue'
+        elif partida.get('solucion') and nodo in partida['solucion']:
+            net.get_node(nodo)['color'] = 'green'
+        elif nodo in cadena_corta:
+            net.get_node(nodo)['color'] = 'red'
+        else:
+            net.get_node(nodo)['color'] = 'lightgray'
+
+    # Resaltar inicio y fin
+    net.get_node(inicio)['size'] = 25
+    net.get_node(fin)['size'] = 25
+    net.get_node(inicio)['color'] = 'gold'
+    net.get_node(fin)['color'] = 'gold'
+
+    # 6️⃣ Generar HTML
+    net.show("grafo_partida.html")
+    print("Grafo generado en 'grafo_partida.html'. Ábrelo en tu navegador para verlo.")

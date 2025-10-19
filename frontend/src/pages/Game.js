@@ -98,10 +98,34 @@ export default function Game() {
     }
   };
 
+  const graficarCadenas = async () => {
+    try {
+      const res = await fetch("http://127.0.0.1:8000/grafo", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          cadena_usuario: cadena,
+          partida: { inicio, fin, solucion },
+          max_cadenas_extra: 5,
+          tiempo_max: 5
+        })
+      });
+      const data = await res.json();
+      if (data.html) {
+        window.open(data.html, "_blank");
+      } else {
+        alert("Error al generar el grafo: " + data.error);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Error al generar el grafo");
+    }
+  };
+
   return (
     <div className={`game-container container ${darkMode ? "dark-mode" : "light-mode"}`}>
       <Header darkMode={darkMode} />
-      
+
       {/* Botón modo oscuro */}
       <div className="dark-mode-toggle">
         <label className="switch">
@@ -117,8 +141,7 @@ export default function Game() {
       {/* CABECERA */}
       <div className="cabecera">
         <h2 className="objetivo">
-          Palabra objetivo:{" "}
-          <span className="objetivo-texto">{fin}</span>
+          Palabra objetivo: <span className="objetivo-texto">{fin}</span>
         </h2>
 
         <div className="vidas">
@@ -191,6 +214,11 @@ export default function Game() {
               <p><strong>Total:</strong> {detalles.total}</p>
             </div>
           )}
+
+          {/* Botón graficar */}
+          <button onClick={graficarCadenas} className="boton-grafo">
+            Graficar cadenas
+          </button>
 
           <button onClick={() => window.location.reload()} className="boton-reiniciar">
             Nueva partida
