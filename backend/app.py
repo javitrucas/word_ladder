@@ -103,20 +103,19 @@ def puntuacion_detallada(cadena: list[str] = Body(...)):
             detalles.append({"palabra": w, "puntuacion": None})
     return {"detalles": detalles, "total": total}
 
+from fastapi.responses import JSONResponse
+
 @app.post("/grafo")
-def generar_grafo(
-    cadena_usuario: list[str] = Body(...),
-    partida: dict = Body(...),
-    max_cadenas_extra: int = 3,
-    tiempo_max: int = 5
-):
+def grafo(cadena_usuario: list[str] = Body(...), partida: dict = Body(...), max_cadenas_extra: int = 3, tiempo_max: int = 5):
     try:
-        graficar_todas_cadenas(
+        # graficar_todas_cadenas ahora devuelve el HTML como string
+        html = graficar_todas_cadenas(
             cadena_usuario=cadena_usuario,
             partida=partida,
             max_cadenas_extra=max_cadenas_extra,
-            tiempo_max=tiempo_max
+            tiempo_max=tiempo_max,
+            render=False  # añadimos un parámetro para devolver string
         )
-        return {"html": "grafo_partida.html", "mensaje": "Grafo generado. Ábrelo en tu navegador."}
+        return JSONResponse(content={"html": html})
     except Exception as e:
-        return {"error": str(e)}
+        return JSONResponse(content={"error": str(e)})

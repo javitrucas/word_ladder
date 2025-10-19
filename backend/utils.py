@@ -217,7 +217,7 @@ from pyvis.network import Network
 import networkx as nx
 from utils import obtener_cadenas
 
-def graficar_todas_cadenas(cadena_usuario, partida, max_cadenas_extra=3, tiempo_max=5):
+def graficar_todas_cadenas(cadena_usuario, partida, max_cadenas_extra=3, tiempo_max=5, render=True):
     G = nx.Graph()
     inicio = partida['inicio']
     fin = partida['fin']
@@ -273,6 +273,8 @@ def graficar_todas_cadenas(cadena_usuario, partida, max_cadenas_extra=3, tiempo_
     net.get_node(inicio)['color'] = 'gold'
     net.get_node(fin)['color'] = 'gold'
 
-    # 6️⃣ Generar HTML
-    net.show("grafo_partida.html")
-    print("Grafo generado en 'grafo_partida.html'. Ábrelo en tu navegador para verlo.")
+    if render:
+        net.show("grafo_partida.html")
+        return None
+    else:
+        return net.generate_html()

@@ -98,6 +98,8 @@ export default function Game() {
     }
   };
 
+  const [htmlGrafo, setHtmlGrafo] = useState(null);
+
   const graficarCadenas = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8000/grafo", {
@@ -112,7 +114,7 @@ export default function Game() {
       });
       const data = await res.json();
       if (data.html) {
-        window.open(data.html, "_blank");
+        setHtmlGrafo(data.html); // guardamos el HTML del grafo
       } else {
         alert("Error al generar el grafo: " + data.error);
       }
@@ -220,6 +222,15 @@ export default function Game() {
             Graficar cadenas
           </button>
 
+          {/* Aquí se mostrará el grafo */}
+          {htmlGrafo && (
+            <iframe
+              title="grafo-partida"
+              srcDoc={htmlGrafo}
+              style={{ width: "100%", height: "700px", border: "none", marginTop: "20px" }}
+            />
+          )}
+          
           <button onClick={() => window.location.reload()} className="boton-reiniciar">
             Nueva partida
           </button>
