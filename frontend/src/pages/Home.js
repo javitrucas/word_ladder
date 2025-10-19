@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 
 export default function Home() {
   const navigate = useNavigate();
+  const [darkMode, setDarkMode] = useState(false); // <-- estado para modo oscuro
 
   const nuevaPartida = async () => {
     try {
@@ -18,7 +19,20 @@ export default function Home() {
   };
 
   return (
-    <div className="container">
+    <div className={`container ${darkMode ? "dark-mode" : "light-mode"}`}>
+      {/* Botón de modo oscuro */}
+      <div className="dark-mode-toggle">
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={darkMode}
+            onChange={() => setDarkMode(!darkMode)}
+          />
+          <span className="slider"></span>
+        </label>
+      </div>
+
+      {/* Tu contenido actual */}
       <div className="titulo">
         <span>W</span>
         <div className="btn-container">
@@ -37,20 +51,22 @@ export default function Home() {
         </div>
         <span>RD</span>
       </div>
+
       <div className="subtitle">LADDER</div>
 
       <div className="explicacion">
         <p>
-          Bienvenido a <strong>Word Ladder</strong>! 🎉
+          En <strong>Word Ladder</strong> tu objetivo es pasar de una palabra inicial a otra final.
+          Cada intento solo puede cambiar <strong>una letra por palabra</strong>.
         </p>
         <p>
-          Tu objetivo es formar una cadena de palabras vecinas, cambiando solo una letra a la vez.
+          Las letras correctas en la posición correcta aparecen en <span className="verde">verde</span>, 
+          las letras que has cambiado aparecen en <span className="amarillo">amarillo</span>.
         </p>
         <p>
-          Tienes <strong>3 vidas</strong> y no puedes repetir palabras.
-        </p>
-        <p>
-          Llega a la palabra final y consigue la máxima puntuación posible.
+          Solo tienes <strong>tres vidas</strong>, así que piensa bien cada movimiento. 
+          <br />
+          <strong>Haz clic en el ojo para comenzar</strong>.
         </p>
       </div>
     </div>

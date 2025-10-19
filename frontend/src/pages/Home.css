@@ -2,7 +2,6 @@
 .container {
   width: 100%;
   min-height: 100vh;
-  background-color: #f3f3f3;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -10,24 +9,35 @@
   font-family: "Arial", sans-serif;
 }
 
-/* From Uiverse.io by kennyotsu-monochromia */ 
-.container {
-  width: 100%;
-  height: 100%;
+/* Light mode - patrón Kennyotsu */
+.container.light-mode {
   --color: #E1E1E1;
   background-color: #F3F3F3;
-  background-image: linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent),
-      linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%,transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%,transparent);
+  background-image: 
+    linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
   background-size: 55px 55px;
+  color: black;
 }
+
+/* Dark mode - patrón Adamgiebl */
+.container.dark-mode {
+  --color: rgba(114, 114, 114, 0.3);
+  background-color: #191a1a;
+  background-image: 
+    linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
+    linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
+  background-size: 55px 55px;
+  color: #f3f3f3;
+}
+
 
 /* Título W[ojo]RD */
 .titulo {
   display: flex;
   align-items: center;
   font-size: 6rem;
-  font-family: "Roboto", sans-serif; /* tipografía moderna */
-  color: black; /* letras negras */
+  font-family: "Roboto", sans-serif;
   letter-spacing: -0.02em;
   margin-bottom: -20px;
 }
@@ -41,7 +51,6 @@
 .subtitle {
   font-size: 5.5rem;
   font-family: "Roboto", sans-serif;
-  color: black;
   margin-bottom: 10px;
   letter-spacing: -0.09em;
   text-align: center;
@@ -49,11 +58,64 @@
 
 /* Explicación */
 .explicacion {
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
   text-align: center;
   max-width: 500px;
-  font-size: 18px;
-  line-height: 1.5;
-  color: #333;
+  margin: 0 auto 50px auto;
+}
+
+.explicacion p {
+  margin-bottom: 1em;
+}
+
+.explicacion strong {
+  color: #FF6600;
+  font-weight: 700;
+}
+
+.explicacion .verde {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.explicacion .amarillo {
+  color: #ffc107;
+  font-weight: 600;
+}
+
+.explicacion .rojo {
+  color: #ff0707;
+  font-weight: 600;
+}
+
+/* Ajustes de color según modo */
+.container.light-mode .titulo,
+.container.light-mode .subtitle,
+.container.light-mode .explicacion {
+  color: black;
+}
+
+.container.dark-mode .titulo,
+.container.dark-mode .subtitle,
+.container.dark-mode .explicacion {
+  color: #f3f3f3;
+}
+
+/* Efecto sutil de entrada */
+.explicacion {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeInUp 0.8s forwards;
+  animation-delay: 0.3s;
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* From Uiverse.io by SnyDeTreves */
@@ -234,4 +296,82 @@
       #000 65% 100%
     );
   }
+}
+
+/* Botón modo oscuro arriba a la derecha */
+.dark-mode-toggle {
+  position: fixed;
+  top: 20px;       /* distancia desde arriba */
+  right: 20px;     /* distancia desde la derecha */
+  z-index: 200;    /* para que esté por encima de todo */
+}
+
+/* Estilos del switch */
+.switch {
+  font-size: 17px;
+  position: relative;
+  display: inline-block;
+  width: 3.5em;
+  height: 2em;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  --background: #28096b;
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--background);
+  transition: .5s;
+  border-radius: 30px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 1.4em;
+  width: 1.4em;
+  border-radius: 50%;
+  left: 10%;
+  bottom: 15%;
+  box-shadow: inset 8px -4px 0px 0px #fff000;
+  background: var(--background);
+  transition: .5s;
+}
+
+input:checked + .slider {
+  background-color: #522ba7;
+}
+
+input:checked + .slider:before {
+  transform: translateX(100%);
+  box-shadow: inset 15px -4px 0px 15px #fff000;
+}
+
+/* Modo oscuro para todo el container */
+.container.dark {
+  --color: #444; /* color de las líneas del patrón */
+  background-color: #121331; /* fondo oscuro */
+}
+
+.container.dark .titulo,
+.container.dark .subtitle,
+.container.dark .explicacion {
+  color: #fff;
+}
+
+.container.dark .explicacion .verde {
+  color: #28a745;
+}
+
+.container.dark .explicacion .amarillo {
+  color: #ffc107;
 }
