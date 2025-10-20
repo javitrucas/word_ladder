@@ -250,10 +250,10 @@ def graficar_todas_cadenas(cadena_usuario, partida, max_cadenas_extra=3, tiempo_
     for nodo in G.nodes():
         if nodo in cadena_usuario:
             net.get_node(nodo)['color'] = 'blue'
-        elif partida.get('solucion') and nodo in partida['solucion']:
-            net.get_node(nodo)['color'] = 'green'
         elif nodo in cadena_corta:
             net.get_node(nodo)['color'] = 'red'
+        elif partida.get('solucion') and nodo in partida['solucion']:
+            net.get_node(nodo)['color'] = 'green'
         else:
             net.get_node(nodo)['color'] = 'lightgray'
 
