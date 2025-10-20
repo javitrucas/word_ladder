@@ -182,16 +182,9 @@ def generar_partida_rapida(longitud_cadena=5):
 
 # Funciones adicionales para la gestión de partidas
 def palabra_repetida(palabra, palabras_usadas):
-    """Devuelve True si la palabra ya se ha usado en la partida."""
     return palabra in palabras_usadas
 
 def colores_letras(palabra_actual, palabra_anterior):
-    """
-    Devuelve una lista con colores para cada letra:
-    'green' si coincide con la palabra anterior en la misma posición
-    'yellow' si la letra está en la palabra anterior pero en otra posición
-    'none' si no coincide
-    """
     colores = []
     for i, letra in enumerate(palabra_actual):
         if palabra_anterior and i < len(palabra_anterior):
@@ -200,15 +193,12 @@ def colores_letras(palabra_actual, palabra_anterior):
             elif letra in palabra_anterior:
                 colores.append('yellow')
             else:
-                colores.append('none')
+                colores.append('yellow')
         else:
             colores.append('none')
     return colores
 
 def actualizar_vidas(vidas, palabra_existe):
-    """
-    Resta una vida si la palabra no existe, devuelve nuevas vidas y si se acabó el juego.
-    """
     if not palabra_existe:
         vidas -= 1
     return vidas, vidas <= 0

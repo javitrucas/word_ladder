@@ -31,7 +31,7 @@ def root():
 
 @app.get("/nueva_partida")
 def nueva_partida():
-    partida = generar_partida_rapida(longitud_cadena=5)
+    partida = generar_partida_rapida(longitud_cadena=10)
     partida["puntuacion_solucion"] = puntuacion_cadena(partida["solucion"])
     partida["vidas"] = 3  # Inicializamos vidas
     partida["palabras_usadas"] = [partida["inicio"]]  # La primera palabra ya usada
