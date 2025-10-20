@@ -1,6 +1,10 @@
 {
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "python3 -m pip install -r backend/requirements.txt"
+    "buildCommand": "pip install -r backend/requirements.txt",
+    "startCommand": "uvicorn backend.app:app --host 0.0.0.0 --port $PORT"
+  },
+  "env": {
+    "RAILWAY_BUILDER_IMAGE": "python:3.11-slim"
   }
 }
