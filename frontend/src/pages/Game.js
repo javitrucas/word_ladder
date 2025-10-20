@@ -13,9 +13,24 @@ export default function Game() {
   const [terminado, setTerminado] = useState(false);
   const [detalles, setDetalles] = useState(null);
   const [solucion, setSolucion] = useState([]);
+
+  // 🔥 Cargar modo oscuro desde localStorage
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("modo") === "oscuro"
   );
+
+  // ✅ Aplicar el modo correcto al cargar
+  useEffect(() => {
+    document.body.classList.remove("light-mode", "dark-mode");
+    document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
+  }, []);
+
+  // ✅ Sincronizar modo con body y localStorage al cambiar
+  useEffect(() => {
+    document.body.classList.remove("light-mode", "dark-mode");
+    document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
+    localStorage.setItem("modo", darkMode ? "oscuro" : "claro");
+  }, [darkMode]);
 
   useEffect(() => {
     const nuevaPartida = async () => {
@@ -37,12 +52,6 @@ export default function Game() {
     };
     nuevaPartida();
   }, []);
-
-  useEffect(() => {
-    document.body.classList.toggle("dark-mode", darkMode);
-    document.body.classList.toggle("light-mode", !darkMode);
-    localStorage.setItem("modo", darkMode ? "oscuro" : "claro");
-  }, [darkMode]);
 
   const handleEnter = async () => {
     if (!palabra || terminado) return;
@@ -114,7 +123,7 @@ export default function Game() {
       });
       const data = await res.json();
       if (data.html) {
-        setHtmlGrafo(data.html); // guardamos el HTML del grafo
+        setHtmlGrafo(data.html);
       } else {
         alert("Error al generar el grafo: " + data.error);
       }

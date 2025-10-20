@@ -1,26 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Header from "../components/Header";
 
-export default function Home() {
+export default function Home({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
-  const [darkMode, setDarkMode] = useState(false);
-
-  // Mantener el fondo cuando el componente carga
-  useEffect(() => {
-    document.body.classList.add("light-mode");
-  }, []);
 
   const toggleDarkMode = () => {
-    setDarkMode(!darkMode);
-    if (!darkMode) {
-      document.body.classList.add("dark-mode");
-      document.body.classList.remove("light-mode");
-    } else {
-      document.body.classList.add("light-mode");
-      document.body.classList.remove("dark-mode");
-    }
+    const newMode = !darkMode;
+    setDarkMode(newMode);
+    localStorage.setItem("modo", newMode ? "oscuro" : "claro");
+
+    document.body.classList.toggle("dark-mode", newMode);
+    document.body.classList.toggle("light-mode", !newMode);
   };
 
   const nuevaPartida = async () => {
@@ -75,11 +67,12 @@ export default function Home() {
             Cada intento solo puede cambiar <strong>una letra por palabra</strong>.
           </p>
           <p>
-            Las letras correctas en la posición correcta aparecen en <span className="verde">verde</span>, 
-            las letras que has cambiado aparecen en <span className="amarillo">amarillo</span>.
+            Las letras correctas en la posición correcta aparecen en{" "}
+            <span className="verde">verde</span>, y las letras que has cambiado
+            aparecen en <span className="amarillo">amarillo</span>.
           </p>
           <p>
-            Solo tienes <strong>tres vidas</strong>, así que piensa bien cada movimiento. 
+            Solo tienes <strong>tres vidas</strong>, así que piensa bien cada movimiento.
             <br />
             <strong>Haz clic en el ojo para comenzar</strong>.
           </p>

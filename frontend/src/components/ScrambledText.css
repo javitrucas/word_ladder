@@ -1,0 +1,38 @@
+.text-block {
+  margin: 7vw;
+  max-width: 800px;
+  font-family: monospace;
+  font-size: clamp(14px, 4vw, 32px);
+  text-align: center;
+  color: var(--text-color);
+}
+
+.char {
+  display: inline-block;
+  transition: color 0.2s ease;
+}
+
+/* Colores de letras */
+.verde {
+  color: #28a745;
+  font-weight: bold;
+}
+
+.amarillo {
+  color: #ffc107;
+  font-weight: bold;
+}
+
+.rojo {
+  color: #ff5555;
+  font-weight: bold;
+}
+
+/* Modos */
+body.light-mode .text-block {
+  --text-color: #111;
+}
+
+body.dark-mode .text-block {
+  --text-color: #fff;
+}
