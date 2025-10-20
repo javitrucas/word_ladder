@@ -1,4 +1,9 @@
 fastapi
 uvicorn
-unicodedata
-time
+gunicorn
+python-multipart
+plotly
+networkx
+pandas
+matplotlib
+numpy

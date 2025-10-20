@@ -106,7 +106,7 @@ def puntuacion_detallada(cadena: list[str] = Body(...)):
 from fastapi.responses import JSONResponse
 
 @app.post("/grafo")
-def grafo(cadena_usuario: list[str] = Body(...), partida: dict = Body(...), max_cadenas_extra: int = 3, tiempo_max: int = 5):
+def grafo(cadena_usuario: list[str] = Body(...), partida: dict = Body(...), max_cadenas_extra: int = 10, tiempo_max: int = 5):
     try:
         # graficar_todas_cadenas ahora devuelve el HTML como string
         html = graficar_todas_cadenas(

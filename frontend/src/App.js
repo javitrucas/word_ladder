@@ -2,24 +2,27 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Game from "./pages/Game";
+import Learn from "./pages/Learn";
+import Plots from "./pages/Plots";
 import "./App.css";
 
 function App() {
-  // 🔥 Modo oscuro global (persistente)
+  // Modo oscuro global
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("modo") === "oscuro"
   );
 
-  // ✅ Aplica el modo correcto al body al iniciar
+  // Aplicar clase a body y html
   useEffect(() => {
+    const tag = darkMode ? "dark-mode" : "light-mode";
     document.body.classList.remove("light-mode", "dark-mode");
-    document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
-  }, []);
+    document.body.classList.add(tag);
+    document.documentElement.classList.remove("light-mode", "dark-mode");
+    document.documentElement.classList.add(tag);
+  }, [darkMode]);
 
-  // ✅ Cada vez que cambie, actualiza el body y localStorage
+  // Guardar modo en localStorage
   useEffect(() => {
-    document.body.classList.remove("light-mode", "dark-mode");
-    document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
     localStorage.setItem("modo", darkMode ? "oscuro" : "claro");
   }, [darkMode]);
 
@@ -33,6 +36,14 @@ function App() {
         <Route
           path="/juego"
           element={<Game darkMode={darkMode} setDarkMode={setDarkMode} />}
+        />
+        <Route
+          path="/learn"
+          element={<Learn darkMode={darkMode} setDarkMode={setDarkMode} />}
+        />
+        <Route
+          path="/plots"
+          element={<Plots darkMode={darkMode} setDarkMode={setDarkMode} />}
         />
       </Routes>
     </Router>

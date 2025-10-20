@@ -1,3 +1,4 @@
+// frontend/src/pages/Game.js
 import React, { useState, useEffect } from "react";
 import "./Game.css";
 import Header from "../components/Header";
@@ -14,18 +15,15 @@ export default function Game() {
   const [detalles, setDetalles] = useState(null);
   const [solucion, setSolucion] = useState([]);
 
-  // 🔥 Cargar modo oscuro desde localStorage
   const [darkMode, setDarkMode] = useState(
     localStorage.getItem("modo") === "oscuro"
   );
 
-  // ✅ Aplicar el modo correcto al cargar
   useEffect(() => {
     document.body.classList.remove("light-mode", "dark-mode");
     document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
   }, []);
 
-  // ✅ Sincronizar modo con body y localStorage al cambiar
   useEffect(() => {
     document.body.classList.remove("light-mode", "dark-mode");
     document.body.classList.add(darkMode ? "dark-mode" : "light-mode");
@@ -75,7 +73,7 @@ export default function Game() {
       setVidas(data.vidas);
       if (data.game_over || data.vidas === 0) {
         setTerminado(true);
-        finalizarJuego([...cadena]);
+        finalizarJuego([...cadena], false);
       }
       return;
     }
@@ -89,23 +87,46 @@ export default function Game() {
 
     if (palabra === fin) {
       setTerminado(true);
-      finalizarJuego(nuevaCadena);
+      finalizarJuego(nuevaCadena, true);
     }
   };
 
-  const finalizarJuego = async (cadenaFinal) => {
-    try {
-      const res = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(cadenaFinal),
-      });
-      const data = await res.json();
-      setDetalles(data);
-    } catch (err) {
-      console.error("Error puntuación:", err);
-    }
-  };
+  const guardarPartidaLocal = (cadenaFinal, victoria, totalPuntos) => {
+  const partidas = JSON.parse(localStorage.getItem("partidas")) || [];
+  partidas.push({
+    inicio,
+    fin,
+    cadenaUsuario: cadenaFinal,
+    vidasUsadas: 3 - vidas,
+    puntos: totalPuntos, // aquí van los puntos totales
+    victoria: victoria   // true si ganaste, false si perdiste
+  });
+  localStorage.setItem("partidas", JSON.stringify(partidas));
+};
+
+const finalizarJuego = async (cadenaFinal) => {
+  try {
+    const res = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(cadenaFinal),
+    });
+    const data = await res.json();
+    setDetalles(data);
+
+    const totalPuntos = data?.total ?? 0;
+    const victoria = cadenaFinal[cadenaFinal.length - 1] === fin;
+
+    guardarPartidaLocal(cadenaFinal, victoria, totalPuntos);
+
+  } catch (err) {
+    console.error("Error puntuación:", err);
+    // Guardamos partida con 0 puntos si falla
+    const totalPuntos = 0;
+    const victoria = cadenaFinal[cadenaFinal.length - 1] === fin;
+    guardarPartidaLocal(cadenaFinal, victoria, totalPuntos);
+  }
+};
 
   const [htmlGrafo, setHtmlGrafo] = useState(null);
 
@@ -137,7 +158,6 @@ export default function Game() {
     <div className={`game-container container ${darkMode ? "dark-mode" : "light-mode"}`}>
       <Header darkMode={darkMode} />
 
-      {/* Botón modo oscuro */}
       <div className="dark-mode-toggle">
         <label className="switch">
           <input
@@ -149,7 +169,6 @@ export default function Game() {
         </label>
       </div>
 
-      {/* CABECERA */}
       <div className="cabecera">
         <h2 className="objetivo">
           Palabra objetivo: <span className="objetivo-texto">{fin}</span>
@@ -164,7 +183,6 @@ export default function Game() {
         </div>
       </div>
 
-      {/* CADENA */}
       <div className="cadena">
         {cadena.map((pal, i) => (
           <div key={i} className="palabra">
@@ -188,7 +206,6 @@ export default function Game() {
         ))}
       </div>
 
-      {/* INPUT */}
       {!terminado && (
         <div className="input-zone">
           <input
@@ -205,7 +222,6 @@ export default function Game() {
 
       {mensaje && <p className="mensaje">{mensaje}</p>}
 
-      {/* FINAL */}
       {terminado && (
         <div className="final">
           <h3>Juego terminado</h3>
@@ -226,12 +242,10 @@ export default function Game() {
             </div>
           )}
 
-          {/* Botón graficar */}
           <button onClick={graficarCadenas} className="boton-grafo">
             Graficar cadenas
           </button>
 
-          {/* Aquí se mostrará el grafo */}
           {htmlGrafo && (
             <iframe
               title="grafo-partida"
@@ -239,7 +253,7 @@ export default function Game() {
               style={{ width: "100%", height: "700px", border: "none", marginTop: "20px" }}
             />
           )}
-          
+
           <button onClick={() => window.location.reload()} className="boton-reiniciar">
             Nueva partida
           </button>

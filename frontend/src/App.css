@@ -6,7 +6,7 @@ body.light-mode, html.light-mode {
     linear-gradient(0deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent),
     linear-gradient(90deg, transparent 24%, var(--color) 25%, var(--color) 26%, transparent 27%, transparent 74%, var(--color) 75%, var(--color) 76%, transparent 77%, transparent);
   background-size: 55px 55px;
-  background-attachment: fixed; /* Esto fija el patrón al viewport */
+  background-attachment: fixed;
   margin: 0;
   padding: 0;
   overflow-x: hidden;
@@ -23,4 +23,12 @@ body.dark-mode, html.dark-mode {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+}
+
+/* Contenedores transparentes para que se vea el patrón */
+.game-container,
+.plots-container,
+.home-container,
+.learn-container {
+  background-color: transparent;
 }

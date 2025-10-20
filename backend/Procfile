@@ -1,0 +1,3 @@
+javitrucas@javitrucas:~/Escritorio/chain_words/backend$ web: gunicorn -k uvicorn.workers.UvicornWorker app:app
+web:: orden no encontrada
+javitrucas@javitrucas:~/Escritorio/chain_words/backend$ 

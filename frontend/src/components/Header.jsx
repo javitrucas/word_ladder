@@ -7,11 +7,11 @@ export default function Header({ darkMode }) {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Ajustamos las rutas a las que realmente existen
   const menuItems = [
     { name: "Inicio", path: "/" },
     { name: "Jugar", path: "/juego" },
-    { name: "Estadísticas", path: "/estadisticas" },
-    { name: "Aprende", path: "/aprende" },
+    { name: "Gráficas", path: "/plots" },
   ];
 
   return (
