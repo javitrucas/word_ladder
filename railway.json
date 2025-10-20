@@ -1,7 +1,6 @@
 {
   "build": {
     "builder": "NIXPACKS",
-    "buildCommand": "pip install -r backend/requirements.txt",
-    "startCommand": "cd backend && gunicorn -k uvicorn.workers.UvicornWorker app:app"
+    "buildCommand": "pip install -r backend/requirements.txt"
   }
 }
