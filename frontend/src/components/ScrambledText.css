@@ -1,38 +1,19 @@
 .text-block {
-  margin: 7vw;
-  max-width: 800px;
-  font-family: monospace;
-  font-size: clamp(14px, 4vw, 32px);
+  font-family: 'Poppins', sans-serif;
+  font-size: 18px;
+  line-height: 1.6;
   text-align: center;
-  color: var(--text-color);
+  max-width: 500px;
+  margin: 0 auto 50px auto;
+  white-space: pre-wrap; /* respeta espacios y saltos */
 }
 
 .char {
   display: inline-block;
-  transition: color 0.2s ease;
+  will-change: transform;
+  margin-right: 0.05em; /* separa un poco las letras */
 }
 
-/* Colores de letras */
-.verde {
-  color: #28a745;
-  font-weight: bold;
-}
-
-.amarillo {
-  color: #ffc107;
-  font-weight: bold;
-}
-
-.rojo {
-  color: #ff5555;
-  font-weight: bold;
-}
-
-/* Modos */
-body.light-mode .text-block {
-  --text-color: #111;
-}
-
-body.dark-mode .text-block {
-  --text-color: #fff;
-}
+.char.verde { color: #28a745; font-weight: 600; }
+.char.amarillo { color: #ffc107; font-weight: 600; }
+.char.rojo { color: #ff0707; font-weight: 600; }

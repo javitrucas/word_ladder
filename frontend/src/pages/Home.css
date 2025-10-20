@@ -67,15 +67,11 @@
   font-weight: 600;
 }
 
-/* Ajustes de color según modo */
-.container.light-mode .titulo,
-.container.light-mode .subtitle,
+/* Ajustes de color según modo SOLO instrucciones */
 .container.light-mode .explicacion {
   color: black;
 }
 
-.container.dark-mode .titulo,
-.container.dark-mode .subtitle,
 .container.dark-mode .explicacion {
   color: #f3f3f3;
 }
@@ -325,22 +321,23 @@ input:checked + .slider:before {
   box-shadow: inset 15px -4px 0px 15px #fff000;
 }
 
-/* Modo oscuro para todo el container */
-.container.dark {
-  --color: #444; /* color de las líneas del patrón */
-  background-color: #121331; /* fondo oscuro */
+/* Modo oscuro para todo el container (solo instrucciones) */
+.container.light-mode .explicacion {
+  color: black;
 }
 
-.container.dark .titulo,
-.container.dark .subtitle,
-.container.dark .explicacion {
-  color: #fff;
+.container.dark-mode .explicacion {
+  color: #f3f3f3;
 }
 
-.container.dark .explicacion .verde {
+.container.dark-mode .explicacion .verde {
   color: #28a745;
 }
 
-.container.dark .explicacion .amarillo {
+.container.dark-mode .explicacion .amarillo {
   color: #ffc107;
+}
+
+.container.dark-mode .explicacion .rojo {
+  color: #ff0707;
 }
