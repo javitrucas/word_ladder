@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import "./Game.css";
 import Header from "../components/Header";
+import API_URL from "../config";
 
 export default function Game() {
   const [inicio, setInicio] = useState("");
@@ -33,7 +34,7 @@ export default function Game() {
   useEffect(() => {
     const nuevaPartida = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:8000/nueva_partida");
+        const res = await fetch("`${API_URL}/nueva_partida");
         const data = await res.json();
         setInicio(data.inicio);
         setFin(data.fin);
@@ -55,7 +56,7 @@ export default function Game() {
     if (!palabra || terminado) return;
     const palabraActual = cadena[cadena.length - 1];
 
-    const res = await fetch("http://127.0.0.1:8000/jugada", {
+    const res = await fetch("`${API_URL}/jugada", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -106,7 +107,7 @@ export default function Game() {
 
 const finalizarJuego = async (cadenaFinal) => {
   try {
-    const res = await fetch("http://127.0.0.1:8000/puntuacion_detallada", {
+    const res = await fetch("`${API_URL}/puntuacion_detallada", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cadenaFinal),
@@ -132,7 +133,7 @@ const finalizarJuego = async (cadenaFinal) => {
 
   const graficarCadenas = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/grafo", {
+      const res = await fetch("`${API_URL}/grafo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import Header from "../components/Header";
+import API_URL from "../config";
 
 export default function Home({ darkMode, setDarkMode }) {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Home({ darkMode, setDarkMode }) {
 
   const nuevaPartida = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/nueva_partida");
+      const res = await fetch(`${API_URL}/nueva_partida`);
       const data = await res.json();
       localStorage.setItem("partida", JSON.stringify(data));
       navigate("/juego");

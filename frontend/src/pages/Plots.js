@@ -5,6 +5,7 @@ import {
   PieChart, Pie, Cell, Legend 
 } from "recharts";
 import "./Plots.css";
+import API_URL from "../config";
 
 export default function Plots({ darkMode, setDarkMode }) {
   const [partidas, setPartidas] = useState([]);
@@ -17,7 +18,7 @@ export default function Plots({ darkMode, setDarkMode }) {
 
   const graficarCadena = async (partida) => {
     try {
-      const res = await fetch("http://127.0.0.1:8000/grafo", {
+      const res = await fetch("`${API_URL}/grafo", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
