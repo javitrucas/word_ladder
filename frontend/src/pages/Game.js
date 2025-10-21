@@ -34,7 +34,7 @@ export default function Game() {
   useEffect(() => {
     const nuevaPartida = async () => {
       try {
-        const res = await fetch("`${API_URL}/nueva_partida");
+        const res = await fetch(`${API_URL}/nueva_partida`);
         const data = await res.json();
         setInicio(data.inicio);
         setFin(data.fin);
@@ -56,7 +56,7 @@ export default function Game() {
     if (!palabra || terminado) return;
     const palabraActual = cadena[cadena.length - 1];
 
-    const res = await fetch("`${API_URL}/jugada", {
+    const res = await fetch(`${API_URL}/jugada`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -107,7 +107,7 @@ export default function Game() {
 
 const finalizarJuego = async (cadenaFinal) => {
   try {
-    const res = await fetch("`${API_URL}/puntuacion_detallada", {
+    const res = await fetch(`${API_URL}/puntuacion_detallada`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(cadenaFinal),
@@ -133,7 +133,7 @@ const finalizarJuego = async (cadenaFinal) => {
 
   const graficarCadenas = async () => {
     try {
-      const res = await fetch("`${API_URL}/grafo", {
+      const res = await fetch(`${API_URL}/grafo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -18,7 +18,7 @@ export default function Plots({ darkMode, setDarkMode }) {
 
   const graficarCadena = async (partida) => {
     try {
-      const res = await fetch("`${API_URL}/grafo", {
+      const res = await fetch(`${API_URL}/grafo`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
